@@ -1,0 +1,43 @@
+# E-commerce Application Task Checklist
+
+## 1. Project Setup
+- [x] Initialize Next.js 14 App Router project 
+- [x] Install dependencies (lucide-react, framer-motion, zustand)
+- [x] Initialize shadcn/ui and configure Tailwind with custom aesthetics (black/white/gray + accent)
+
+## 2. Core Data & State
+- [x] Create [/src/data/products.ts](file:///c:/Users/Will/Downloads/New%20folder/web/src/data/products.ts) (Acrylic and 3D Printed products)
+- [x] Implement cart store ([/src/store/useCartStore.ts](file:///c:/Users/Will/Downloads/New%20folder/web/src/store/useCartStore.ts)) with Zustand & localStorage
+  - Add/remove/update quantity
+  - Bulk discounts logic (5+ 15%, 10+ 20%, 20+ 30%)
+
+## 3. UI Components (Global)
+- [x] Header (Navigation, Cart Trigger, Search placeholder)
+- [x] Footer (Links, Trust badges, Payment icons)
+- [x] UI primitives using shadcn/ui (Button, Select, Accordion, Slider, etc.)
+
+## 4. Pages: Home & Static
+- [x] [app/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/page.tsx) (Hero, Trust Badges, Shop by Style, Categories, Discounts, FAQ)
+- [x] [app/pages/faqs/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/pages/faqs/page.tsx), [app/pages/about/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/pages/about/page.tsx), [app/pages/contact/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/pages/contact/page.tsx)
+- [x] [app/policies/shipping/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/policies/shipping/page.tsx), [app/policies/returns/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/policies/returns/page.tsx)
+
+## 5. Pages: Collections
+- [x] `app/collections/[slug]/page.tsx`
+- [x] Implement Collection Filter Sidebar (Shape, Material, Color, etc.)
+- [x] Product Card Grid View
+
+## 6. Pages: Product Details & Configurator
+- [x] `app/products/[handle]/page.tsx`
+- [x] Variant selector component (Material, Color, Size, Shape, etc.)
+- [x] Dynamic SVG Preview Generator for Acrylic signs (real-time rendering)
+- [x] Installation Instructions accordion
+- [x] Mock Reviews module & Cross-sell section
+
+## 7. Cart & Checkout
+- [x] [app/cart/page.tsx](file:///c:/Users/Will/Downloads/New%20folder/web/src/app/cart/page.tsx) (Cart items, tier discounts computation, shipping options)
+- [x] `app/order/[id]/page.tsx` (Simulated checkout success page with order summary)
+
+## 8. Final Polish
+- [ ] Responsive design verification
+- [ ] Accessibility tweaks (aria labels)
+- [ ] README documentation (Stripe setup, local run, deployment)
