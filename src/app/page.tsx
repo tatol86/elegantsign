@@ -2,16 +2,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, Clock, ShieldCheck, MapPin } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import Image from 'next/image';
 
 export default function Home() {
   return (
     <div>
       {/* Hero Section */}
       <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center bg-neutral-950 overflow-hidden">
-        {/* Abstract shapes / placeholder background */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
@@ -19,17 +16,17 @@ export default function Home() {
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto space-y-8">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white">
-Elegant Custom Signage
+            Elegant Custom Signage
           </h1>
           <p className="text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto">
-            Design your custom house number or explore our precision 3D printed collection. Australian made, premium materials.
+            Design your custom house number or explore our precision-crafted collection. Australian made, premium materials.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Button asChild size="lg" className="h-14 px-8 text-base bg-white text-black hover:bg-neutral-200">
               <Link href="/collections/house-numbers">Start Customising</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base text-white border-white bg-transparent hover:bg-white/10 hover:text-white">
-              <Link href="/collections/3d-printed">Shop 3D Printed</Link>
+              <Link href="/collections/all">View All Products</Link>
             </Button>
           </div>
         </div>
@@ -59,7 +56,7 @@ Elegant Custom Signage
         </div>
       </section>
 
-      {/* Shop by Style */}
+      {/* Shop by Style — now with real product images */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -70,9 +67,14 @@ Elegant Custom Signage
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="/collections/single-layer" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                {/* Placeholder graphic */}
-                <div className="absolute inset-0 flex items-center justify-center text-neutral-300 group-hover:scale-105 transition-transform duration-500">
-                  <div className="w-32 h-32 border-4 border-current flex items-center justify-center font-bold text-4xl">12</div>
+                <img
+                  src="/products/round-single-1.png"
+                  alt="Single Layer acrylic house number sign"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-none mb-2 text-xs">3 Products</Badge>
                 </div>
               </div>
               <h3 className="text-xl font-semibold mb-2">Single Layer</h3>
@@ -81,9 +83,14 @@ Elegant Custom Signage
 
             <Link href="/collections/double-layer" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                {/* Placeholder graphic */}
-                <div className="absolute inset-0 flex items-center justify-center text-neutral-300 group-hover:scale-105 transition-transform duration-500">
-                  <div className="w-40 h-24 bg-current flex items-center justify-center font-bold text-4xl text-white shadow-2xl rounded-sm">12</div>
+                <img
+                  src="/products/square-double-1.png"
+                  alt="Double Layer acrylic house number sign"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-none mb-2 text-xs">4 Products</Badge>
                 </div>
               </div>
               <h3 className="text-xl font-semibold mb-2">Double Layer</h3>
@@ -92,9 +99,14 @@ Elegant Custom Signage
 
             <Link href="/collections/3d-raised" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                {/* Placeholder graphic */}
-                <div className="absolute inset-0 flex items-center justify-center text-neutral-300 group-hover:scale-105 transition-transform duration-500">
-                  <div className="text-6xl font-bold drop-shadow-xl text-neutral-400">12</div>
+                <img
+                  src="/products/3d-raised-1.png"
+                  alt="3D Raised individual house numbers"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-none mb-2 text-xs">1 Product</Badge>
                 </div>
               </div>
               <h3 className="text-xl font-semibold mb-2">3D Raised</h3>
@@ -104,13 +116,13 @@ Elegant Custom Signage
         </div>
       </section>
 
-      {/* Popular Categories */}
+      {/* Popular Categories — only link to categories that have products */}
       <section className="py-24 bg-neutral-50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight mb-4">Popular Categories</h2>
-              <p className="text-neutral-500 max-w-xl">From address signs to practical home utility plaques.</p>
+              <h2 className="text-3xl font-bold tracking-tight mb-4">Browse Our Collection</h2>
+              <p className="text-neutral-500 max-w-xl">Australian-made house number signs in every style.</p>
             </div>
             <Button variant="ghost" className="font-semibold" asChild>
               <Link href="/collections/all">View All Products &rarr;</Link>
@@ -118,10 +130,16 @@ Elegant Custom Signage
           </div>
 
           <div className="flex flex-wrap gap-4">
-            {['House Numbers', 'House Number + Street', 'No Junk Mail', 'Custom Text', '3D Printed'].map((category) => (
-              <Link key={category} href={`/collections/${category.toLowerCase().replace(/ /g, '-')}`}>
+            {[
+              { name: 'All Products', href: '/collections/all' },
+              { name: 'Single Layer', href: '/collections/single-layer' },
+              { name: 'Double Layer', href: '/collections/double-layer' },
+              { name: '3D Raised', href: '/collections/3d-raised' },
+              { name: 'House Numbers', href: '/collections/house-numbers' },
+            ].map((category) => (
+              <Link key={category.name} href={category.href}>
                 <Badge variant="outline" className="px-6 py-3 text-sm hover:bg-black hover:text-white transition-colors cursor-pointer rounded-full border-neutral-300">
-                  {category}
+                  {category.name}
                 </Badge>
               </Link>
             ))}
@@ -129,7 +147,7 @@ Elegant Custom Signage
         </div>
       </section>
 
-      {/* Bulk & Trade Discounts */}
+      {/* Bulk & Trade Discounts — improved from placeholder */}
       <section className="py-24 bg-black text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -144,7 +162,7 @@ Elegant Custom Signage
                   <div className="text-neutral-300">Off orders of 5+ items</div>
                 </div>
                 <div className="flex items-center gap-4 border-b border-neutral-800 pb-4">
-                  <div className="text-2xl font-bold w-16 text-primary">20%</div>
+                  <div className="text-2xl font-bold w-16 text-white">20%</div>
                   <div className="text-neutral-300">Off orders of 10+ items</div>
                 </div>
                 <div className="flex items-center gap-4 pb-4">
@@ -152,16 +170,23 @@ Elegant Custom Signage
                   <div className="text-neutral-300">Off orders of 20+ items</div>
                 </div>
               </div>
+              <Button asChild size="lg" className="bg-white text-black hover:bg-neutral-200 mt-4">
+                <Link href="/collections/all">Start Shopping</Link>
+              </Button>
             </div>
-            <div className="bg-neutral-900 rounded-3xl p-8 aspect-square flex items-center justify-center relative overflow-hidden">
-              {/* Decorative grid */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-              <div className="relative z-10 flex flex-wrap justify-center gap-4 max-w-sm">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <div key={i} className="w-16 h-16 bg-neutral-800 rounded-lg flex items-center justify-center text-neutral-600 font-bold text-xl border border-neutral-700 shadow-xl">
-                    {i}
-                  </div>
-                ))}
+            <div className="bg-neutral-900 rounded-3xl overflow-hidden aspect-square relative">
+              <img
+                src="/products/round-double-1.png"
+                alt="Bulk order house number signs"
+                className="w-full h-full object-cover opacity-60"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8 space-y-3">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold">30%</span>
+                  <span className="text-neutral-400 text-lg">off</span>
+                </div>
+                <p className="text-neutral-300 text-sm">on orders of 20+ signs. Perfect for apartment blocks & developments.</p>
               </div>
             </div>
           </div>
@@ -180,7 +205,7 @@ Elegant Custom Signage
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-left">How long does shipping take?</AccordionTrigger>
               <AccordionContent className="text-neutral-500 leading-relaxed">
-                Most acrylic signs are dispatched within 1-2 business days. 3D printed items may take 2-3 days depending on complexity. Standard free shipping within Australia takes 3-5 business days. Express options are available at checkout.
+                Most acrylic signs are dispatched within 1-2 business days. Standard free shipping within Australia takes 3-5 business days. Express options are available at checkout.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
@@ -192,7 +217,7 @@ Elegant Custom Signage
             <AccordionItem value="item-3">
               <AccordionTrigger className="text-left">Are the signs weatherproof?</AccordionTrigger>
               <AccordionContent className="text-neutral-500 leading-relaxed">
-                Absolutely. Our acrylic is UV stabilized and designed to endure harsh Australian sun without fading or yellowing. Our 3D printed objects in ASA or PETG are extremely durable and temperature resistant.
+                Absolutely. Our acrylic is UV stabilized and designed to endure harsh Australian sun without fading or yellowing.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
@@ -213,4 +238,3 @@ Elegant Custom Signage
     </div>
   );
 }
-

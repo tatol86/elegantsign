@@ -110,7 +110,7 @@ export const useCartStore = create<CartStore>()(
             },
         }),
         {
-            name: 'ecommerce-cart-storage',
+            name: 'elegantsign-cart-storage',
         }
     )
 );

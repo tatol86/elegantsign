@@ -2,6 +2,22 @@ import { getProductByHandle } from '@/data/products';
 import { notFound } from 'next/navigation';
 import ProductConfigurator from '@/components/product/ProductConfigurator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { handle: string } }): Promise<Metadata> {
+    const product = getProductByHandle(params.handle);
+    if (!product) return { title: 'Product Not Found' };
+
+    return {
+        title: `${product.title} | ElegantSign`,
+        description: product.description,
+        openGraph: {
+            title: product.title,
+            description: product.description,
+            images: [product.images[0]],
+        }
+    };
+}
 
 export default function ProductPage({ params }: { params: { handle: string } }) {
     const product = getProductByHandle(params.handle);
@@ -10,14 +26,23 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
         notFound();
     }
 
-    // Mock Reviews
-    const reviews = Array.from({ length: 4 }).map((_, i) => ({
-        id: i,
-        author: ['A.J.', 'Sarah T.', 'Mark W.', 'Emma R.'][i],
-        rating: 5,
-        date: '2 weeks ago',
-        text: ['Absolutely stunning! Really transforms the front of our house.', 'Super easy to install with the tape. Fast shipping too.', 'High quality acrylic, exactly as described.', 'The 3D effect is perfect. Highly recommended.'][i]
-    }));
+    // Professional Mock Reviews (until real ones are added via Admin)
+    const reviews = [
+        {
+            id: 1,
+            author: 'James B.',
+            rating: 5,
+            date: 'Last Month',
+            text: 'The quality of the acrylic is outstanding. It looks very premium on our rendered wall.'
+        },
+        {
+            id: 2,
+            author: 'Sarah L.',
+            rating: 5,
+            date: '3 weeks ago',
+            text: 'Fast dispatch and very easy to install. The double layer effect adds great depth.'
+        }
+    ];
 
     return (
         <div className="container mx-auto px-4 py-8">

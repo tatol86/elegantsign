@@ -49,8 +49,8 @@ export default function Header() {
                 <Link href="/" className="text-xl md:text-2xl tracking-tighter font-bold uppercase hidden md:block">
                     ELEGANT<span className="text-neutral-400">SIGN</span>
                 </Link>
-                <Link href="/" className="text-xl font-bold uppercase tracking-tighter md:hidden mx-auto">
-                    E<span className="text-neutral-400">S</span>
+                <Link href="/" className="text-lg font-bold uppercase tracking-tighter md:hidden mx-auto font-bold tracking-tighter">
+                    ELEGANT<span className="text-neutral-400">SIGN</span>
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -68,9 +68,28 @@ export default function Header() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" aria-label="Search">
-                        <Search className="h-5 w-5" />
-                    </Button>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon" aria-label="Search">
+                                <Search className="h-5 w-5" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="top" className="h-[200px] flex items-center justify-center">
+                            <div className="w-full max-w-2xl px-4">
+                                <form action="/collections/all" method="GET" className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400" />
+                                    <input
+                                        type="text"
+                                        name="q"
+                                        placeholder="Search products..."
+                                        className="w-full h-12 pl-12 pr-4 bg-neutral-100 rounded-full border-none focus:ring-2 focus:ring-black transition-all"
+                                        autoFocus
+                                    />
+                                </form>
+                                <p className="text-center text-xs text-neutral-400 mt-4">Press enter to search the catalog</p>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                     <Link href="/cart">
                         <Button variant="ghost" size="icon" className="relative" aria-label="Cart">
                             <ShoppingCart className="h-5 w-5" />

@@ -1,20 +1,9 @@
-import { products, getProductsByCategory, Category } from '@/data/products';
+import { products, getProductsByCategory, getProductsByBuildStyle, Product } from '@/data/products';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-
-// Helper to convert slug to category name for our mock data
-const slugToCategory: Record<string, Category | 'All'> = {
-    'all': 'All',
-    'house-numbers': 'House Numbers',
-    'house-number-street': 'House Number + Street',
-    'custom-text': 'Custom Text',
-    'no-junk-mail': 'No Junk Mail',
-    '3d-printed': '3D Printed',
-};
+import { Metadata } from 'next';
 
 const slugToTitle: Record<string, string> = {
     'all': 'All Products',
@@ -28,125 +17,133 @@ const slugToTitle: Record<string, string> = {
     '3d-raised': '3D Raised Signs'
 };
 
-export default function CollectionPage({ params }: { params: { slug: string } }) {
-    const categoryName = slugToCategory[params.slug];
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const title = slugToTitle[params.slug] || 'Collection';
+    return {
+        title: `${title} | ElegantSign`,
+        description: `Explore our ${title.toLowerCase()} collection. Premium Australian-made signage.`
+    };
+}
 
-    // Filter products based on slug
-    let filteredProducts = products;
-
-    if (categoryName && categoryName !== 'All') {
-        filteredProducts = getProductsByCategory(categoryName);
-    } else if (params.slug === 'single-layer') {
-        filteredProducts = products.filter(p => p.buildStyle === 'Single Layer');
-    } else if (params.slug === 'double-layer') {
-        filteredProducts = products.filter(p => p.buildStyle === 'Double Layer');
-    } else if (params.slug === '3d-raised') {
-        filteredProducts = products.filter(p => p.buildStyle === '3D Raised');
+function getFilteredProducts(slug: string): Product[] {
+    switch (slug) {
+        case 'all':
+            return products;
+        case 'house-numbers':
+            return getProductsByCategory('House Numbers');
+        case 'house-number-street':
+        case 'house-number-+-street':
+            return getProductsByCategory('House Number + Street');
+        case 'custom-text':
+            return getProductsByCategory('Custom Text');
+        case 'no-junk-mail':
+            return getProductsByCategory('No Junk Mail');
+        case '3d-printed':
+            return getProductsByCategory('3D Printed');
+        case 'single-layer':
+            return getProductsByBuildStyle('Single Layer');
+        case 'double-layer':
+            return getProductsByBuildStyle('Double Layer');
+        case '3d-raised':
+            return getProductsByBuildStyle('3D Raised');
+        default:
+            return products;
     }
+}
 
+export default function CollectionPage({ params }: { params: { slug: string } }) {
+    const filteredProducts = getFilteredProducts(params.slug);
     const title = slugToTitle[params.slug] || 'Collection';
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {/* Breadcrumbs Placeholder */}
+            {/* Breadcrumbs */}
             <div className="text-sm text-neutral-500 mb-8">
                 <Link href="/" className="hover:text-black">Home</Link> / <span className="text-black capitalize">{title}</span>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-12">
-                {/* Filters Sidebar */}
-                <aside className="w-full md:w-64 shrink-0">
-                    <h2 className="text-xl font-bold mb-6">Filters</h2>
-                    <div className="space-y-6">
-                        <Accordion type="multiple" defaultValue={['shape', 'material']} className="w-full text-sm">
-                            <AccordionItem value="shape">
-                                <AccordionTrigger className="font-semibold px-1">Shape</AccordionTrigger>
-                                <AccordionContent className="px-1 space-y-2 text-neutral-600">
-                                    {['Rectangle', 'Square', 'Circle', 'Arch', 'Rounded'].map((shape) => (
-                                        <div key={shape} className="flex items-center gap-2">
-                                            <input type="checkbox" id={`shape-${shape}`} className="accent-black w-4 h-4 rounded-sm border-neutral-300" />
-                                            <label htmlFor={`shape-${shape}`}>{shape}</label>
-                                        </div>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="material">
-                                <AccordionTrigger className="font-semibold px-1">Material</AccordionTrigger>
-                                <AccordionContent className="px-1 space-y-2 text-neutral-600">
-                                    <div className="flex items-center gap-2">
-                                        <input type="checkbox" id="mat-acrylic" className="accent-black w-4 h-4 rounded-sm" />
-                                        <label htmlFor="mat-acrylic">Premium Acrylic</label>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <input type="checkbox" id="mat-pla" className="accent-black w-4 h-4 rounded-sm" />
-                                        <label htmlFor="mat-pla">Eco PLA (3D)</label>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <input type="checkbox" id="mat-asa" className="accent-black w-4 h-4 rounded-sm" />
-                                        <label htmlFor="mat-asa">Outdoor ASA (3D)</label>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
-                </aside>
-
-                {/* Product Grid */}
-                <div className="flex-1">
-                    <div className="flex justify-between items-end mb-8 border-b pb-4">
-                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
-                        <span className="text-sm text-neutral-500 hidden sm:block">{filteredProducts.length} Products</span>
-                    </div>
-
-                    {filteredProducts.length === 0 ? (
-                        <div className="py-24 text-center">
-                            <p className="text-neutral-500 mb-4">No products found in this category.</p>
-                            <Button asChild variant="outline">
-                                <Link href="/collections/all">Clear Filters</Link>
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-                            {filteredProducts.map((product) => (
-                                <Link key={product.id} href={`/products/${product.handle}`} className="group block">
-                                    <Card className="border-none shadow-none bg-transparent">
-                                        <CardContent className="p-0">
-                                            <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden relative mb-4">
-                                                <img
-                                                    src={product.images[0]}
-                                                    alt={product.title}
-                                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                                {product.leadTimeDays === '1-2' && (
-                                                    <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-none shadow-sm font-semibold text-xs tracking-wider uppercase">
-                                                        Fast Dispatch
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                            <div className="space-y-1">
-                                                <div className="flex justify-between items-start gap-2">
-                                                    <h3 className="font-semibold text-base leading-snug group-hover:text-neutral-600 transition-colors">{product.title}</h3>
-                                                    <span className="font-medium whitespace-nowrap">${product.price.toFixed(2)}</span>
-                                                </div>
-                                                <p className="text-sm text-neutral-500 line-clamp-1">{product.category}</p>
-
-                                                <div className="flex items-center gap-1 pt-1">
-                                                    <div className="flex text-black text-[10px]">
-                                                        {'★★★★★'.split('').map((star, i) => (
-                                                            <span key={i} className={i < Math.floor(product.rating) ? "text-black" : "text-neutral-300"}>★</span>
-                                                        ))}
-                                                    </div>
-                                                    <span className="text-xs text-neutral-500">({product.reviews})</span>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+            {/* Header */}
+            <div className="flex justify-between items-end mb-10 border-b pb-6">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
+                    <p className="text-neutral-500 mt-2">{filteredProducts.length} Product{filteredProducts.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div className="flex gap-2">
+                    {['all', 'single-layer', 'double-layer', '3d-raised'].map(slug => (
+                        <Link key={slug} href={`/collections/${slug}`}>
+                            <Badge
+                                variant="outline"
+                                className={`px-4 py-2 text-xs cursor-pointer rounded-full transition-colors ${params.slug === slug ? 'bg-black text-white border-black' : 'hover:bg-neutral-100 border-neutral-300'}`}
+                            >
+                                {slugToTitle[slug]}
+                            </Badge>
+                        </Link>
+                    ))}
                 </div>
             </div>
+
+            {filteredProducts.length === 0 ? (
+                <div className="py-24 text-center">
+                    <p className="text-neutral-500 mb-4">No products found in this category.</p>
+                    <Button asChild variant="outline">
+                        <Link href="/collections/all">View All Products</Link>
+                    </Button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+                    {filteredProducts.map((product) => (
+                        <Link key={product.id} href={`/products/${product.handle}`} className="group block">
+                            <Card className="border-none shadow-none bg-transparent">
+                                <CardContent className="p-0">
+                                    <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden relative mb-4">
+                                        <img
+                                            src={product.images[0]}
+                                            alt={product.title}
+                                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        {product.leadTimeDays === '1-2' && (
+                                            <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-none shadow-sm font-semibold text-xs tracking-wider uppercase">
+                                                Fast Dispatch
+                                            </Badge>
+                                        )}
+                                        {product.buildStyle && (
+                                            <Badge className={`absolute top-3 right-3 border-none shadow-sm text-[10px] tracking-wider uppercase ${product.buildStyle === 'Double Layer' ? 'bg-blue-500 text-white hover:bg-blue-500' :
+                                                product.buildStyle === '3D Raised' ? 'bg-amber-500 text-white hover:bg-amber-500' :
+                                                    'bg-neutral-700 text-white hover:bg-neutral-700'
+                                                }`}>
+                                                {product.buildStyle}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <h3 className="font-semibold text-sm leading-snug group-hover:text-neutral-600 transition-colors line-clamp-2">
+                                            {product.title}
+                                        </h3>
+
+                                        <div className="flex items-center gap-1 pt-0.5">
+                                            <div className="flex text-[10px]">
+                                                {'★★★★★'.split('').map((star, i) => (
+                                                    <span key={i} className={i < Math.floor(product.rating) ? "text-black" : "text-neutral-300"}>★</span>
+                                                ))}
+                                            </div>
+                                            {product.reviews > 0 && (
+                                                <span className="text-xs text-neutral-500">({product.reviews})</span>
+                                            )}
+                                        </div>
+
+                                        <p className="font-medium text-sm">
+                                            {product.sizeOptions && product.sizeOptions.length > 1
+                                                ? `From $${product.startingPrice?.toFixed(2)}`
+                                                : `$${(product.startingPrice || product.price || 0).toFixed(2)}`
+                                            }
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
