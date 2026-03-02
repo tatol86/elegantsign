@@ -1,5 +1,7 @@
-import { products, getProductsByCategory, getProductsByBuildStyle, Product } from '@/data/products';
+import { getAllProducts, getProductsByCategory, getProductsByBuildStyle, Product } from '@/data/products';
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,41 +27,65 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-function getFilteredProducts(slug: string): Product[] {
+function getFilteredProducts(slug: string, searchQuery?: string): Product[] {
+    let baseProducts: Product[];
     switch (slug) {
         case 'all':
-            return products;
+            baseProducts = getAllProducts();
+            break;
         case 'house-numbers':
-            return getProductsByCategory('House Numbers');
+            baseProducts = getProductsByCategory('House Numbers');
+            break;
         case 'house-number-street':
         case 'house-number-+-street':
-            return getProductsByCategory('House Number + Street');
+            baseProducts = getProductsByCategory('House Number + Street');
+            break;
         case 'custom-text':
-            return getProductsByCategory('Custom Text');
+            baseProducts = getProductsByCategory('Custom Text');
+            break;
         case 'no-junk-mail':
-            return getProductsByCategory('No Junk Mail');
+            baseProducts = getProductsByCategory('No Junk Mail');
+            break;
         case '3d-printed':
-            return getProductsByCategory('3D Printed');
+            baseProducts = getProductsByCategory('3D Printed');
+            break;
         case 'single-layer':
-            return getProductsByBuildStyle('Single Layer');
+            baseProducts = getProductsByBuildStyle('Single Layer');
+            break;
         case 'double-layer':
-            return getProductsByBuildStyle('Double Layer');
+            baseProducts = getProductsByBuildStyle('Double Layer');
+            break;
         case '3d-raised':
-            return getProductsByBuildStyle('3D Raised');
+            baseProducts = getProductsByBuildStyle('3D Raised');
+            break;
         default:
-            return products;
+            baseProducts = getAllProducts();
     }
+
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return baseProducts.filter(p =>
+            p.title.toLowerCase().includes(query) ||
+            p.description.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query) ||
+            p.tags.some(t => t.toLowerCase().includes(query))
+        );
+    }
+
+    return baseProducts;
 }
 
-export default function CollectionPage({ params }: { params: { slug: string } }) {
-    const filteredProducts = getFilteredProducts(params.slug);
-    const title = slugToTitle[params.slug] || 'Collection';
+export default function CollectionPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+    const query = typeof searchParams.q === 'string' ? searchParams.q : undefined;
+    const filteredProducts = getFilteredProducts(params.slug, query);
+    const baseTitle = slugToTitle[params.slug] || 'Collection';
+    const title = query ? `Search Results for "${query}"` : baseTitle;
 
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Breadcrumbs */}
             <div className="text-sm text-neutral-500 mb-8">
-                <Link href="/" className="hover:text-black">Home</Link> / <span className="text-black capitalize">{title}</span>
+                <Link href="/" className="hover:text-black">Home</Link> / <span className="text-black capitalize">{baseTitle}</span> {query && <span>/ Search</span>}
             </div>
 
             {/* Header */}

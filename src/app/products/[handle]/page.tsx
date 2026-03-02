@@ -4,6 +4,8 @@ import ProductConfigurator from '@/components/product/ProductConfigurator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: { handle: string } }): Promise<Metadata> {
     const product = getProductByHandle(params.handle);
     if (!product) return { title: 'Product Not Found' };

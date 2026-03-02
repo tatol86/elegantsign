@@ -1,405 +1,497 @@
 [
-    {
-        "id": "hn-square-double",
-        "handle": "house-numbers-square-corners-double-layer",
-        "title": "House Numbers — Square Corners — Double Layer",
-        "description": "A bold, modern double-layer acrylic house number sign with sharp square corners. The raised top layer creates a striking 3D contrast effect against the base plate.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "double-layer",
-            "square-corners",
-            "house-numbers"
-        ],
-        "startingPrice": 30.00,
-        "images": [
-            "/products/square-double-1.png"
-        ],
-        "rating": 4.9,
-        "reviews": 9,
-        "leadTimeDays": "1-2",
-        "buildStyle": "Double Layer",
-        "shape": "Rectangle",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black on White",
-            "White on Matte Black",
-            "Brushed Gold on Black",
-            "Silver on White"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Small (200×100mm)",
-                "width": 200,
-                "height": 100,
-                "price": 30.00
-            },
-            {
-                "label": "Medium (300×150mm)",
-                "width": 300,
-                "height": 150,
-                "price": 45.00
-            },
-            {
-                "label": "Large (400×200mm)",
-                "width": 400,
-                "height": 200,
-                "price": 65.00
-            }
-        ]
-    },
-    {
-        "id": "hn-3d-raised",
-        "handle": "house-numbers-3d-raised",
-        "title": "House Numbers — 3D Raised",
-        "description": "Premium 3D raised individual numbers mounted on standoff pins for a floating, architectural look. Each character casts a natural shadow against your wall.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "3d-raised",
-            "premium",
-            "house-numbers"
-        ],
-        "startingPrice": 60.00,
-        "images": [
-            "/products/3d-raised-1.png"
-        ],
-        "rating": 5.0,
-        "reviews": 1,
-        "leadTimeDays": "2-3",
-        "buildStyle": "3D Raised",
-        "shape": "Rectangle",
-        "mountingOptions": [
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black",
-            "Gloss White",
-            "Brushed Gold",
-            "Brushed Silver"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Standard (150mm tall)",
-                "width": 300,
-                "height": 150,
-                "price": 60.00
-            },
-            {
-                "label": "Large (200mm tall)",
-                "width": 400,
-                "height": 200,
-                "price": 85.00
-            },
-            {
-                "label": "Extra Large (250mm tall)",
-                "width": 500,
-                "height": 250,
-                "price": 110.00
-            }
-        ]
-    },
-    {
-        "id": "hn-round-double",
-        "handle": "house-numbers-round-corners-double-layer",
-        "title": "House Numbers — Round Corners — Double Layer",
-        "description": "Softly rounded corners give this double-layer sign a friendly, contemporary feel. The contrasting layers add depth and dimension to your house number.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "double-layer",
-            "round-corners",
-            "house-numbers"
-        ],
-        "startingPrice": 30.00,
-        "images": [
-            "/products/round-double-1.png"
-        ],
-        "rating": 4.8,
-        "reviews": 34,
-        "leadTimeDays": "1-2",
-        "buildStyle": "Double Layer",
-        "shape": "Rounded Rectangle",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black on White",
-            "White on Matte Black",
-            "Brushed Gold on Black",
-            "Silver on White"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Small (200×100mm)",
-                "width": 200,
-                "height": 100,
-                "price": 30.00
-            },
-            {
-                "label": "Medium (300×150mm)",
-                "width": 300,
-                "height": 150,
-                "price": 45.00
-            },
-            {
-                "label": "Large (400×200mm)",
-                "width": 400,
-                "height": 200,
-                "price": 65.00
-            }
-        ]
-    },
-    {
-        "id": "hn-round-single",
-        "handle": "house-numbers-round-corners-single-layer",
-        "title": "House Numbers — Round Corners — Single Layer",
-        "description": "Clean and minimalist single-layer design with elegantly rounded corners. Precision laser-cut numbers create a seamless flush-mount look.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "single-layer",
-            "round-corners",
-            "house-numbers"
-        ],
-        "startingPrice": 25.00,
-        "images": [
-            "/products/round-single-1.png"
-        ],
-        "rating": 4.9,
-        "reviews": 62,
-        "leadTimeDays": "1-2",
-        "buildStyle": "Single Layer",
-        "shape": "Rounded Rectangle",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black",
-            "Gloss White",
-            "Brushed Gold",
-            "Silver"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Small (200×100mm)",
-                "width": 200,
-                "height": 100,
-                "price": 25.00
-            },
-            {
-                "label": "Medium (300×150mm)",
-                "width": 300,
-                "height": 150,
-                "price": 38.00
-            },
-            {
-                "label": "Large (400×200mm)",
-                "width": 400,
-                "height": 200,
-                "price": 55.00
-            }
-        ]
-    },
-    {
-        "id": "hn-circle-double",
-        "handle": "house-numbers-circle-double-layer",
-        "title": "House Numbers — Circle — Double Layer",
-        "description": "A statement circular design with two contrasting acrylic layers. The round silhouette makes a bold, eye-catching impression at your front door.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "double-layer",
-            "circle",
-            "house-numbers"
-        ],
-        "startingPrice": 30.00,
-        "images": [
-            "/products/circle-double-1.png"
-        ],
-        "rating": 4.5,
-        "reviews": 6,
-        "leadTimeDays": "1-2",
-        "buildStyle": "Double Layer",
-        "shape": "Circle",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black on White",
-            "White on Matte Black",
-            "Brushed Gold on Black",
-            "Silver on White"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Small (Ø200mm)",
-                "width": 200,
-                "height": 200,
-                "price": 30.00
-            },
-            {
-                "label": "Medium (Ø280mm)",
-                "width": 280,
-                "height": 280,
-                "price": 48.00
-            },
-            {
-                "label": "Large (Ø350mm)",
-                "width": 350,
-                "height": 350,
-                "price": 70.00
-            }
-        ]
-    },
-    {
-        "id": "hn-circle-single",
-        "handle": "house-numbers-circle-single-layer",
-        "title": "House Numbers — Circle — Single Layer",
-        "description": "A perfectly round single-layer sign with laser-cut numbers. Minimalist elegance meets bold geometry for a timeless curb appeal.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "single-layer",
-            "circle",
-            "house-numbers"
-        ],
-        "startingPrice": 25.00,
-        "images": [
-            "/products/circle-single-1.png"
-        ],
-        "rating": 5.0,
-        "reviews": 11,
-        "leadTimeDays": "1-2",
-        "buildStyle": "Single Layer",
-        "shape": "Circle",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black",
-            "Gloss White",
-            "Brushed Gold",
-            "Silver"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Small (Ø200mm)",
-                "width": 200,
-                "height": 200,
-                "price": 25.00
-            },
-            {
-                "label": "Medium (Ø280mm)",
-                "width": 280,
-                "height": 280,
-                "price": 40.00
-            },
-            {
-                "label": "Large (Ø350mm)",
-                "width": 350,
-                "height": 350,
-                "price": 60.00
-            }
-        ]
-    },
-    {
-        "id": "hn-arch-single",
-        "handle": "house-numbers-arch-single-layer",
-        "title": "House Numbers — Arch — Single Layer",
-        "description": "An elegant arch-top silhouette in single-layer acrylic. The curved crown and flat base create a classic, sophisticated house sign aesthetic.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "single-layer",
-            "arch",
-            "house-numbers"
-        ],
-        "startingPrice": 55.00,
-        "images": [
-            "/products/arch-single-1.png"
-        ],
-        "rating": 4.7,
-        "reviews": 0,
-        "leadTimeDays": "2-3",
-        "buildStyle": "Single Layer",
-        "shape": "Arch",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black",
-            "Gloss White",
-            "Brushed Gold",
-            "Silver"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Medium (250×300mm)",
-                "width": 250,
-                "height": 300,
-                "price": 55.00
-            },
-            {
-                "label": "Large (350×400mm)",
-                "width": 350,
-                "height": 400,
-                "price": 80.00
-            }
-        ]
-    },
-    {
-        "id": "hn-arch-double",
-        "handle": "house-numbers-arch-double-layer",
-        "title": "House Numbers — Arch — Double Layer",
-        "description": "The premium arch design with two layers of contrasting acrylic. Combines the elegance of the arch silhouette with striking depth and dimension.",
-        "category": "House Numbers",
-        "tags": [
-            "acrylic",
-            "double-layer",
-            "arch",
-            "house-numbers"
-        ],
-        "startingPrice": 70.00,
-        "images": [
-            "/products/arch-double-1.png"
-        ],
-        "rating": 4.8,
-        "reviews": 0,
-        "leadTimeDays": "2-3",
-        "buildStyle": "Double Layer",
-        "shape": "Arch",
-        "mountingOptions": [
-            "Mounting Tape",
-            "Standoff Screws"
-        ],
-        "colors": [
-            "Matte Black on White",
-            "White on Matte Black",
-            "Brushed Gold on Black",
-            "Silver on White"
-        ],
-        "sizeOptions": [
-            {
-                "label": "Medium (250×300mm)",
-                "width": 250,
-                "height": 300,
-                "price": 70.00
-            },
-            {
-                "label": "Large (350×400mm)",
-                "width": 350,
-                "height": 400,
-                "price": 95.00
-            }
-        ]
-    }
+  {
+    "id": "hn-square-double",
+    "handle": "house-numbers-square-corners-double-layer",
+    "title": "House Numbers — Square Corners — Double Layer",
+    "description": "A bold, modern double-layer acrylic house number sign with sharp square corners. The raised top layer creates a striking 3D contrast effect against the base plate.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "double-layer",
+      "square-corners",
+      "house-numbers"
+    ],
+    "startingPrice": 30,
+    "images": [
+      "/products/square-double-1.png"
+    ],
+    "rating": 4.9,
+    "reviews": 9,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Double Layer",
+    "shape": "Rectangle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black on White",
+      "White on Matte Black",
+      "Brushed Gold on Black",
+      "Silver on White"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Small (200×100mm)",
+        "width": 200,
+        "height": 100,
+        "price": 30
+      },
+      {
+        "label": "Medium (300×150mm)",
+        "width": 300,
+        "height": 150,
+        "price": 45
+      },
+      {
+        "label": "Large (400×200mm)",
+        "width": 400,
+        "height": 200,
+        "price": 65
+      }
+    ]
+  },
+  {
+    "id": "hn-3d-raised",
+    "handle": "house-numbers-3d-raised",
+    "title": "House Numbers — 3D Raised",
+    "description": "Premium 3D raised individual numbers mounted on standoff pins for a floating, architectural look. Each character casts a natural shadow against your wall.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "3d-raised",
+      "premium",
+      "house-numbers"
+    ],
+    "startingPrice": 60,
+    "images": [
+      "/products/3d-raised-1.png"
+    ],
+    "rating": 5,
+    "reviews": 1,
+    "leadTimeDays": "2-3",
+    "buildStyle": "3D Raised",
+    "shape": "Rectangle",
+    "mountingOptions": [
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black",
+      "Gloss White",
+      "Brushed Gold",
+      "Brushed Silver"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Standard (150mm tall)",
+        "width": 300,
+        "height": 150,
+        "price": 60
+      },
+      {
+        "label": "Large (200mm tall)",
+        "width": 400,
+        "height": 200,
+        "price": 85
+      },
+      {
+        "label": "Extra Large (250mm tall)",
+        "width": 500,
+        "height": 250,
+        "price": 110
+      }
+    ]
+  },
+  {
+    "id": "hn-round-double",
+    "handle": "house-numbers-round-corners-double-layer",
+    "title": "House Numbers — Round Corners — Double Layer",
+    "description": "Softly rounded corners give this double-layer sign a friendly, contemporary feel. The contrasting layers add depth and dimension to your house number.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "double-layer",
+      "round-corners",
+      "house-numbers"
+    ],
+    "startingPrice": 30,
+    "images": [
+      "/products/round-double-1.png"
+    ],
+    "rating": 4.8,
+    "reviews": 34,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Double Layer",
+    "shape": "Rounded Rectangle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black on White",
+      "White on Matte Black",
+      "Brushed Gold on Black",
+      "Silver on White"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Small (200×100mm)",
+        "width": 200,
+        "height": 100,
+        "price": 30
+      },
+      {
+        "label": "Medium (300×150mm)",
+        "width": 300,
+        "height": 150,
+        "price": 45
+      },
+      {
+        "label": "Large (400×200mm)",
+        "width": 400,
+        "height": 200,
+        "price": 65
+      }
+    ]
+  },
+  {
+    "id": "hn-round-single",
+    "handle": "house-numbers-round-corners-single-layer",
+    "title": "House Numbers — Round Corners — Single Layer",
+    "description": "Clean and minimalist single-layer design with elegantly rounded corners. Precision laser-cut numbers create a seamless flush-mount look.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "single-layer",
+      "round-corners",
+      "house-numbers"
+    ],
+    "startingPrice": 25,
+    "images": [
+      "/products/round-single-1.png"
+    ],
+    "rating": 4.9,
+    "reviews": 62,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Single Layer",
+    "shape": "Rounded Rectangle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black",
+      "Gloss White",
+      "Brushed Gold",
+      "Silver"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Small (200×100mm)",
+        "width": 200,
+        "height": 100,
+        "price": 25
+      },
+      {
+        "label": "Medium (300×150mm)",
+        "width": 300,
+        "height": 150,
+        "price": 38
+      },
+      {
+        "label": "Large (400×200mm)",
+        "width": 400,
+        "height": 200,
+        "price": 55
+      }
+    ]
+  },
+  {
+    "id": "hn-circle-double",
+    "handle": "house-numbers-circle-double-layer",
+    "title": "House Numbers — Circle — Double Layer",
+    "description": "A statement circular design with two contrasting acrylic layers. The round silhouette makes a bold, eye-catching impression at your front door.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "double-layer",
+      "circle",
+      "house-numbers"
+    ],
+    "startingPrice": 30,
+    "images": [
+      "/products/circle-double-1.png"
+    ],
+    "rating": 4.5,
+    "reviews": 6,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Double Layer",
+    "shape": "Circle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black on White",
+      "White on Matte Black",
+      "Brushed Gold on Black",
+      "Silver on White"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Small (Ø200mm)",
+        "width": 200,
+        "height": 200,
+        "price": 30
+      },
+      {
+        "label": "Medium (Ø280mm)",
+        "width": 280,
+        "height": 280,
+        "price": 48
+      },
+      {
+        "label": "Large (Ø350mm)",
+        "width": 350,
+        "height": 350,
+        "price": 70
+      }
+    ]
+  },
+  {
+    "id": "hn-circle-single",
+    "handle": "house-numbers-circle-single-layer",
+    "title": "House Numbers — Circle — Single Layer",
+    "description": "A perfectly round single-layer sign with laser-cut numbers. Minimalist elegance meets bold geometry for a timeless curb appeal.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "single-layer",
+      "circle",
+      "house-numbers"
+    ],
+    "startingPrice": 25,
+    "images": [
+      "/products/circle-single-1.png"
+    ],
+    "rating": 5,
+    "reviews": 11,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Single Layer",
+    "shape": "Circle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black",
+      "Gloss White",
+      "Brushed Gold",
+      "Silver"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Small (Ø200mm)",
+        "width": 200,
+        "height": 200,
+        "price": 25
+      },
+      {
+        "label": "Medium (Ø280mm)",
+        "width": 280,
+        "height": 280,
+        "price": 40
+      },
+      {
+        "label": "Large (Ø350mm)",
+        "width": 350,
+        "height": 350,
+        "price": 60
+      }
+    ]
+  },
+  {
+    "id": "hn-arch-single",
+    "handle": "house-numbers-arch-single-layer",
+    "title": "House Numbers — Arch — Single Layer",
+    "description": "An elegant arch-top silhouette in single-layer acrylic. The curved crown and flat base create a classic, sophisticated house sign aesthetic.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "single-layer",
+      "arch",
+      "house-numbers"
+    ],
+    "startingPrice": 55,
+    "images": [
+      "/products/arch-single-1.png"
+    ],
+    "rating": 4.7,
+    "reviews": 0,
+    "leadTimeDays": "2-3",
+    "buildStyle": "Single Layer",
+    "shape": "Arch",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black",
+      "Gloss White",
+      "Brushed Gold",
+      "Silver"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Medium (250×300mm)",
+        "width": 250,
+        "height": 300,
+        "price": 55
+      },
+      {
+        "label": "Large (350×400mm)",
+        "width": 350,
+        "height": 400,
+        "price": 80
+      }
+    ]
+  },
+  {
+    "id": "hn-arch-double",
+    "handle": "house-numbers-arch-double-layer",
+    "title": "House Numbers — Arch — Double Layer",
+    "description": "The premium arch design with two layers of contrasting acrylic. Combines the elegance of the arch silhouette with striking depth and dimension.",
+    "category": "House Numbers",
+    "tags": [
+      "acrylic",
+      "double-layer",
+      "arch",
+      "house-numbers"
+    ],
+    "startingPrice": 70,
+    "images": [
+      "/products/arch-double-1.png"
+    ],
+    "rating": 4.8,
+    "reviews": 0,
+    "leadTimeDays": "2-3",
+    "buildStyle": "Double Layer",
+    "shape": "Arch",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black on White",
+      "White on Matte Black",
+      "Brushed Gold on Black",
+      "Silver on White"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Medium (250×300mm)",
+        "width": 250,
+        "height": 300,
+        "price": 70
+      },
+      {
+        "label": "Large (350×400mm)",
+        "width": 350,
+        "height": 400,
+        "price": 95
+      }
+    ]
+  },
+  {
+    "id": "hns-square-double",
+    "handle": "house-number-street-square-corners-double-layer",
+    "title": "House Number + Street — Square Corners — Double Layer",
+    "description": "A bold, modern double-layer acrylic house sign featuring both your house number and street name. Designed with sharp square corners, the raised top layer creates a striking 3D contrast effect against the base plate.",
+    "category": "House Number + Street",
+    "tags": [
+      "acrylic",
+      "double-layer",
+      "square-corners",
+      "house-number-street"
+    ],
+    "startingPrice": 45,
+    "images": [
+      "/products/hns-double-1.png"
+    ],
+    "rating": 5,
+    "reviews": 12,
+    "leadTimeDays": "2-3",
+    "buildStyle": "Double Layer",
+    "shape": "Rectangle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black on White",
+      "White on Matte Black",
+      "Brushed Gold on Black",
+      "Silver on White"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Medium (300×150mm)",
+        "width": 300,
+        "height": 150,
+        "price": 45
+      },
+      {
+        "label": "Large (400×200mm)",
+        "width": 400,
+        "height": 200,
+        "price": 65
+      }
+    ]
+  },
+  {
+    "id": "hns-round-single",
+    "handle": "house-number-street-round-corners-single-layer",
+    "title": "House Number + Street — Round Corners — Single Layer",
+    "description": "Clean and minimalist single-layer design with elegantly rounded corners. Precision laser-cut house number and street name create a seamless flush-mount look.",
+    "category": "House Number + Street",
+    "tags": [
+      "acrylic",
+      "single-layer",
+      "round-corners",
+      "house-number-street"
+    ],
+    "startingPrice": 40,
+    "images": [
+      "/products/hns-single-1.png"
+    ],
+    "rating": 4.9,
+    "reviews": 8,
+    "leadTimeDays": "1-2",
+    "buildStyle": "Single Layer",
+    "shape": "Rounded Rectangle",
+    "mountingOptions": [
+      "Mounting Tape",
+      "Standoff Screws"
+    ],
+    "colors": [
+      "Matte Black",
+      "Gloss White",
+      "Brushed Gold",
+      "Silver"
+    ],
+    "sizeOptions": [
+      {
+        "label": "Medium (300×150mm)",
+        "width": 300,
+        "height": 150,
+        "price": 40
+      },
+      {
+        "label": "Large (400×200mm)",
+        "width": 400,
+        "height": 200,
+        "price": 60
+      }
+    ]
+  }
 ]

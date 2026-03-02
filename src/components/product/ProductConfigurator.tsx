@@ -44,9 +44,18 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     const svgWidth = currentSize?.width || 300;
     const svgHeight = currentSize?.height || 150;
 
-    // Scale factor: fit within a 500px display canvas
-    const maxDim = Math.max(svgWidth, svgHeight);
-    const scale = 500 / maxDim;
+    // Calculate max character lengths based on size to ensure good display effect
+    const maxNumLength = svgWidth >= 400 ? 7 : svgWidth >= 300 ? 5 : 4;
+    const maxStreetLength = svgWidth >= 400 ? 25 : svgWidth >= 300 ? 18 : 12;
+
+    // Find the maximum dimension across all sizes to scale relative to the biggest one
+    const maxSizeDim = useMemo(() => {
+        if (!product.sizeOptions || product.sizeOptions.length === 0) return Math.max(svgWidth, svgHeight);
+        return Math.max(...product.sizeOptions.map(s => Math.max(s.width, s.height)));
+    }, [product.sizeOptions, svgWidth, svgHeight]);
+
+    // Scale factor: fit within a 500px display canvas dynamically relative to max product size
+    const scale = 500 / maxSizeDim;
     const displayW = svgWidth * scale;
     const displayH = svgHeight * scale;
 
@@ -85,14 +94,14 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         const cy = displayH / 2;
         const cornerR = Math.min(displayW, displayH) * 0.08;
 
-        const fontFamily = font === 'modern' ? "'Inter', sans-serif" : font === 'serif' ? "'Georgia', serif" : "'Courier New', monospace";
+        const fontFamily = font === 'modern' ? "'Inter', sans-serif" : font === 'serif' ? "'Georgia', serif" : font === 'stencil' ? "'Allerta Stencil', 'Stencil Std', Stencil, sans-serif" : "'Courier New', monospace";
         const fontSize = Math.min(displayW * 0.35, displayH * 0.55);
-        const smallFontSize = fontSize * 0.32;
+        const smallFontSize = Math.min(displayW * 0.1, fontSize * 0.35);
 
         const textAnchor = layout === 'left' ? 'start' : 'middle';
         const textX = layout === 'left' ? displayW * 0.12 : cx;
-        const textY = text2 ? cy - fontSize * 0.1 : cy + fontSize * 0.3;
-        const text2Y = textY + fontSize * 0.6;
+        const textY = text2 ? cy - fontSize * 0.15 : cy;
+        const text2Y = text2 ? cy + smallFontSize * 1.5 : cy;
 
         let shapeSvg = '';
         let backShapeSvg = '';
@@ -141,21 +150,24 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
             const charSpacing = fontSize * 0.75;
             const totalWidth = chars.length * charSpacing;
             const startX = cx - totalWidth / 2 + charSpacing * 0.4;
-            const charY = text2 ? cy - fontSize * 0.1 : cy + fontSize * 0.3;
+            const charY = textY;
 
             textSvg = chars.map((char, i) => `
-                <text x="${startX + i * charSpacing}" y="${charY + 3}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="rgba(0,0,0,0.3)" text-anchor="middle">${char}</text>
-                <text x="${startX + i * charSpacing}" y="${charY}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="${textColor}" text-anchor="middle">${char}</text>
+                <text x="${startX + i * charSpacing}" y="${charY + 3}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="rgba(0,0,0,0.3)" text-anchor="middle" dominant-baseline="central">${char}</text>
+                <text x="${startX + i * charSpacing}" y="${charY}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="${textColor}" text-anchor="middle" dominant-baseline="central">${char}</text>
             `).join('');
         } else {
             textSvg = `
-                <text x="${textX}" y="${textY}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="${textColor}" text-anchor="${textAnchor}">${text1 || '12'}</text>
+                <text x="${textX}" y="${textY}" font-family="${fontFamily}" font-size="${fontSize}" font-weight="bold" fill="${textColor}" text-anchor="${textAnchor}" dominant-baseline="central">${text1 || '12'}</text>
             `;
         }
 
         const text2Svg = text2 ? `
-            <text x="${textX}" y="${text2Y}" font-family="${fontFamily}" font-size="${smallFontSize}" fill="${textColor}" letter-spacing="3" text-anchor="${textAnchor}">${text2.toUpperCase()}</text>
+            <text x="${textX}" y="${text2Y}" font-family="${fontFamily}" font-size="${smallFontSize}" fill="${textColor}" letter-spacing="3" text-anchor="${textAnchor}" dominant-baseline="central">${text2}</text>
         ` : '';
+
+        // Import stencil font purely for SVG completeness
+        const fontStyleSvg = font === 'stencil' ? `<style>@import url('https://fonts.googleapis.com/css2?family=Allerta+Stencil&amp;display=swap');</style>` : '';
 
         // Adjust viewBox for circle (square aspect)
         const vbW = shape === 'Circle' ? Math.max(displayW, displayH) + layerOffset * 2 : displayW + layerOffset * 2;
@@ -163,6 +175,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
 
         return `
             <svg width="100%" height="100%" viewBox="-${layerOffset} -${layerOffset} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg">
+                ${fontStyleSvg}
                 <defs>
                     <filter id="signShadow" x="-20%" y="-20%" width="140%" height="140%">
                         <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.25)" />
@@ -340,11 +353,16 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                 <Input
                                     id="num"
                                     value={text1}
-                                    onChange={(e) => setText1(e.target.value)}
-                                    maxLength={5}
+                                    onChange={(e) => {
+                                        if (e.target.value.length <= maxNumLength) {
+                                            setText1(e.target.value);
+                                        }
+                                    }}
+                                    maxLength={maxNumLength}
                                     placeholder="e.g. 12"
                                     className="h-12 text-lg bg-white"
                                 />
+                                <span className="text-xs text-neutral-500 mt-1 block px-1">Max {maxNumLength} characters for this size</span>
                             </div>
 
                             {product.category === 'House Number + Street' && (
@@ -353,11 +371,16 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                     <Input
                                         id="street"
                                         value={text2}
-                                        onChange={(e) => setText2(e.target.value)}
-                                        maxLength={30}
+                                        onChange={(e) => {
+                                            if (e.target.value.length <= maxStreetLength) {
+                                                setText2(e.target.value);
+                                            }
+                                        }}
+                                        maxLength={maxStreetLength}
                                         placeholder="e.g. SMITH ST"
                                         className="h-12 bg-white"
                                     />
+                                    <span className="text-xs text-neutral-500 mt-1 block px-1">Max {maxStreetLength} characters for this size</span>
                                 </div>
                             )}
 
@@ -371,6 +394,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                         <SelectContent>
                                             <SelectItem value="modern">Modern Sans</SelectItem>
                                             <SelectItem value="serif">Classic Serif</SelectItem>
+                                            <SelectItem value="stencil">Laser Stencil</SelectItem>
                                             <SelectItem value="mono">Architect Mono</SelectItem>
                                         </SelectContent>
                                     </Select>

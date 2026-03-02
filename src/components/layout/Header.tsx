@@ -14,6 +14,7 @@ export default function Header() {
     const navLinks = [
         { name: 'Shop All', href: '/collections/all' },
         { name: 'House Numbers', href: '/collections/house-numbers' },
+        { name: 'House No. + Street', href: '/collections/house-number-street' },
         { name: '3D Printed', href: '/collections/3d-printed' },
         { name: 'About', href: '/pages/about' },
     ];

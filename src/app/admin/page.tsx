@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const res = await fetch('/api/admin/products');
+            const res = await fetch('/api/admin/products', { cache: 'no-store' });
             const data = await res.json();
             setProducts(data);
         } catch (err) {
@@ -229,8 +229,8 @@ export default function AdminDashboard() {
                                 {/* Build Style Badge */}
                                 <div className="absolute bottom-2 left-2">
                                     <span className={`px-2 py-1 text-[10px] font-bold rounded-md uppercase tracking-wider ${product.buildStyle === 'Double Layer' ? 'bg-blue-500/80 text-white' :
-                                            product.buildStyle === '3D Raised' ? 'bg-amber-500/80 text-white' :
-                                                'bg-neutral-600/80 text-white'
+                                        product.buildStyle === '3D Raised' ? 'bg-amber-500/80 text-white' :
+                                            'bg-neutral-600/80 text-white'
                                         }`}>
                                         {product.buildStyle}
                                     </span>
@@ -308,7 +308,7 @@ function ProductForm({
     saving: boolean;
 }) {
     const defaultProduct: Product = {
-        id: '',
+        id: `new-${Date.now()}`,
         handle: '',
         title: '',
         description: '',
