@@ -1,105 +1,115 @@
+import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { ZodError } from 'zod';
+import { logAdminAudit } from '@/lib/admin-audit';
+import { requireAdminRequest } from '@/lib/admin-route';
+import { prisma } from '@/lib/prisma';
+import { productDetailInclude, mapProductRecord } from '@/lib/catalog';
+import { buildProductWriteData, productInputSchema } from '@/lib/product-payload';
 
 export const dynamic = 'force-dynamic';
 
-const DATA_PATH = path.join(process.cwd(), 'src', 'data', 'products.json');
+function handleRouteError(error: unknown) {
+  if (error instanceof ZodError) {
+    return NextResponse.json(
+      {
+        error: 'Invalid product payload',
+        issues: error.flatten(),
+      },
+      { status: 400 },
+    );
+  }
 
-function readProducts() {
-    const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(raw);
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  ) {
+    return NextResponse.json(
+      { error: 'A product with that handle already exists.' },
+      { status: 409 },
+    );
+  }
+
+  console.error(error);
+  return NextResponse.json({ error: 'Failed to process products' }, { status: 500 });
 }
 
-function writeProducts(products: any[]) {
-    fs.writeFileSync(DATA_PATH, JSON.stringify(products, null, 2), 'utf-8');
+export async function GET(req: NextRequest) {
+  const admin = await requireAdminRequest(req, 'catalog');
+  if (admin instanceof NextResponse) {
+    return admin;
+  }
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: {
+        createdAt: 'asc',
+      },
+      include: productDetailInclude,
+    });
+
+    return NextResponse.json(products.map(mapProductRecord), {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    });
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }
 
-// GET all products
-export async function GET() {
-    try {
-        const products = readProducts();
-        return NextResponse.json(products, {
-            headers: {
-                'Cache-Control': 'no-store, max-age=0',
-            }
-        });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to read products' }, { status: 500 });
-    }
-}
-
-// POST create new product
 export async function POST(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const products = readProducts();
+  const admin = await requireAdminRequest(req, 'catalog');
 
-        // Generate ID and handle from title
-        const cleanTitle = (body.title || '').trim();
-        const generatedHandle = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const generatedId = `product-${Date.now()}`;
+  if (admin instanceof NextResponse) {
+    return admin;
+  }
 
-        // Spread body FIRST, then override id/handle so empty strings never win
-        const newProduct = {
-            ...body,
-            id: (body.id && body.id.trim()) ? body.id : generatedId,
-            handle: (body.handle && body.handle.trim()) ? body.handle : generatedHandle,
-            startingPrice: body.sizeOptions?.length > 0
-                ? Math.min(...body.sizeOptions.map((s: any) => s.price))
-                : (body.startingPrice || 0),
-        };
+  try {
+    const input = productInputSchema.parse(await req.json());
+    const data = buildProductWriteData(input);
 
-        products.push(newProduct);
-        writeProducts(products);
+    const product = await prisma.product.create({
+      data: {
+        handle: data.handle,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        tags: data.tags,
+        startingPriceCents: data.startingPriceCents,
+        rating: data.rating,
+        reviewsCount: data.reviewsCount,
+        leadTimeDays: data.leadTimeDays,
+        buildStyle: data.buildStyle,
+        shape: data.shape,
+        mountingOptions: data.mountingOptions,
+        materials: data.materials,
+        colors: data.colors,
+        images: {
+          create: data.imageRows,
+        },
+        sizeOptions: {
+          create: data.sizeOptionRows,
+        },
+      },
+      include: productDetailInclude,
+    });
 
-        return NextResponse.json(newProduct, { status: 201 });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
-    }
-}
+    await logAdminAudit({
+      actorUserId: admin.userId,
+      action: 'PRODUCT_CREATED',
+      entityType: 'product',
+      entityId: product.id,
+      summary: `Created product ${product.title}.`,
+      metadata: {
+        productId: product.id,
+        handle: product.handle,
+        title: product.title,
+        category: product.category,
+      },
+    });
 
-// PUT update existing product
-export async function PUT(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const products = readProducts();
-
-        const index = products.findIndex((p: any) => p.id === body.id);
-        if (index === -1) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
-
-        products[index] = { ...products[index], ...body };
-        writeProducts(products);
-
-        return NextResponse.json(products[index]);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
-    }
-}
-
-// DELETE product
-export async function DELETE(req: NextRequest) {
-    try {
-        const url = new URL(req.url);
-        const id = url.searchParams.get('id');
-
-        if (!id) {
-            return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
-        }
-
-        const products = readProducts();
-        const filteredProducts = products.filter((p: any) => p.id !== id);
-
-        if (products.length === filteredProducts.length) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
-
-        writeProducts(filteredProducts);
-
-        return NextResponse.json({ message: 'Product deleted successfully' });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
-    }
+    return NextResponse.json(mapProductRecord(product), { status: 201 });
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }

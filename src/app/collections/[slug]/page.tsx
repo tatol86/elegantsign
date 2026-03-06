@@ -1,4 +1,5 @@
-import { getAllProducts, getProductsByCategory, getProductsByBuildStyle, Product } from '@/data/products';
+import { getAllProducts, getProductsByCategory, getProductsByBuildStyle } from '@/data/products';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -6,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Metadata } from 'next';
+import type { Product } from '@/types/catalog';
 
 const slugToTitle: Record<string, string> = {
     'all': 'All Products',
@@ -27,39 +29,39 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-function getFilteredProducts(slug: string, searchQuery?: string): Product[] {
+async function getFilteredProducts(slug: string, searchQuery?: string): Promise<Product[]> {
     let baseProducts: Product[];
     switch (slug) {
         case 'all':
-            baseProducts = getAllProducts();
+            baseProducts = await getAllProducts();
             break;
         case 'house-numbers':
-            baseProducts = getProductsByCategory('House Numbers');
+            baseProducts = await getProductsByCategory('House Numbers');
             break;
         case 'house-number-street':
         case 'house-number-+-street':
-            baseProducts = getProductsByCategory('House Number + Street');
+            baseProducts = await getProductsByCategory('House Number + Street');
             break;
         case 'custom-text':
-            baseProducts = getProductsByCategory('Custom Text');
+            baseProducts = await getProductsByCategory('Custom Text');
             break;
         case 'no-junk-mail':
-            baseProducts = getProductsByCategory('No Junk Mail');
+            baseProducts = await getProductsByCategory('No Junk Mail');
             break;
         case '3d-printed':
-            baseProducts = getProductsByCategory('3D Printed');
+            baseProducts = await getProductsByCategory('3D Printed');
             break;
         case 'single-layer':
-            baseProducts = getProductsByBuildStyle('Single Layer');
+            baseProducts = await getProductsByBuildStyle('Single Layer');
             break;
         case 'double-layer':
-            baseProducts = getProductsByBuildStyle('Double Layer');
+            baseProducts = await getProductsByBuildStyle('Double Layer');
             break;
         case '3d-raised':
-            baseProducts = getProductsByBuildStyle('3D Raised');
+            baseProducts = await getProductsByBuildStyle('3D Raised');
             break;
         default:
-            baseProducts = getAllProducts();
+            baseProducts = await getAllProducts();
     }
 
     if (searchQuery) {
@@ -75,9 +77,9 @@ function getFilteredProducts(slug: string, searchQuery?: string): Product[] {
     return baseProducts;
 }
 
-export default function CollectionPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function CollectionPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
     const query = typeof searchParams.q === 'string' ? searchParams.q : undefined;
-    const filteredProducts = getFilteredProducts(params.slug, query);
+    const filteredProducts = await getFilteredProducts(params.slug, query);
     const baseTitle = slugToTitle[params.slug] || 'Collection';
     const title = query ? `Search Results for "${query}"` : baseTitle;
 
@@ -122,10 +124,12 @@ export default function CollectionPage({ params, searchParams }: { params: { slu
                             <Card className="border-none shadow-none bg-transparent">
                                 <CardContent className="p-0">
                                     <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden relative mb-4">
-                                        <img
+                                        <Image
                                             src={product.images[0]}
                                             alt={product.title}
-                                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                            fill
+                                            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                         />
                                         {product.leadTimeDays === '1-2' && (
                                             <Badge className="absolute top-3 left-3 bg-white text-black hover:bg-white border-none shadow-sm font-semibold text-xs tracking-wider uppercase">

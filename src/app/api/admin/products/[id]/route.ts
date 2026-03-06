@@ -1,86 +1,205 @@
+import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { ZodError } from 'zod';
+import { logAdminAudit } from '@/lib/admin-audit';
+import { requireAdminRequest } from '@/lib/admin-route';
+import { prisma } from '@/lib/prisma';
+import { productDetailInclude, mapProductRecord } from '@/lib/catalog';
+import { buildProductWriteData, productInputSchema } from '@/lib/product-payload';
+import { deleteProductAssets } from '@/lib/storage';
 
-const DATA_PATH = path.join(process.cwd(), 'src', 'data', 'products.json');
+function handleRouteError(error: unknown) {
+  if (error instanceof ZodError) {
+    return NextResponse.json(
+      {
+        error: 'Invalid product payload',
+        issues: error.flatten(),
+      },
+      { status: 400 },
+    );
+  }
 
-function readProducts() {
-    const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(raw);
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  ) {
+    return NextResponse.json(
+      { error: 'A product with that handle already exists.' },
+      { status: 409 },
+    );
+  }
+
+  console.error(error);
+  return NextResponse.json({ error: 'Failed to process product' }, { status: 500 });
 }
 
-function writeProducts(products: any[]) {
-    fs.writeFileSync(DATA_PATH, JSON.stringify(products, null, 2), 'utf-8');
-}
-
-// GET single product
 export async function GET(
-    req: NextRequest,
-    { params }: { params: { id: string } }
+  _req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
-    try {
-        const products = readProducts();
-        const product = products.find((p: any) => p.id === params.id);
-        if (!product) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
-        return NextResponse.json(product);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to read product' }, { status: 500 });
+  const admin = await requireAdminRequest(_req, 'catalog');
+
+  if (admin instanceof NextResponse) {
+    return admin;
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: productDetailInclude,
+    });
+
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
+
+    return NextResponse.json(mapProductRecord(product));
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }
 
-// PUT update product
 export async function PUT(
-    req: NextRequest,
-    { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
-    try {
-        const body = await req.json();
-        const products = readProducts();
-        const index = products.findIndex((p: any) => p.id === params.id);
+  const admin = await requireAdminRequest(req, 'catalog');
 
-        if (index === -1) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
+  if (admin instanceof NextResponse) {
+    return admin;
+  }
 
-        // Merge existing product with updates
-        products[index] = {
-            ...products[index],
-            ...body,
-            id: params.id, // Prevent ID change
-        };
+  try {
+    const input = productInputSchema.parse(await req.json());
+    const data = buildProductWriteData(input);
 
-        // Auto-update startingPrice from sizeOptions if present
-        if (body.sizeOptions && body.sizeOptions.length > 0) {
-            products[index].startingPrice = Math.min(
-                ...body.sizeOptions.map((s: any) => s.price)
-            );
-        }
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        images: {
+          orderBy: {
+            sortOrder: 'asc',
+          },
+        },
+      },
+    });
 
-        writeProducts(products);
-        return NextResponse.json(products[index]);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+    if (!existingProduct) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
+
+    const product = await prisma.product.update({
+      where: {
+        id: params.id,
+      },
+      data: {
+        handle: data.handle,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        tags: data.tags,
+        startingPriceCents: data.startingPriceCents,
+        rating: data.rating,
+        reviewsCount: data.reviewsCount,
+        leadTimeDays: data.leadTimeDays,
+        buildStyle: data.buildStyle,
+        shape: data.shape,
+        mountingOptions: data.mountingOptions,
+        materials: data.materials,
+        colors: data.colors,
+        images: {
+          deleteMany: {},
+          create: data.imageRows,
+        },
+        sizeOptions: {
+          deleteMany: {},
+          create: data.sizeOptionRows,
+        },
+      },
+      include: productDetailInclude,
+    });
+
+    const removedImageUrls = existingProduct.images
+      .map((image) => image.url)
+      .filter((url) => !data.imageRows.some((image) => image.url === url));
+
+    if (removedImageUrls.length > 0) {
+      await deleteProductAssets(removedImageUrls);
+    }
+
+    await logAdminAudit({
+      actorUserId: admin.userId,
+      action: 'PRODUCT_UPDATED',
+      entityType: 'product',
+      entityId: product.id,
+      summary: `Updated product ${product.title}.`,
+      metadata: {
+        productId: product.id,
+        previousHandle: existingProduct.handle,
+        handle: product.handle,
+        title: product.title,
+        removedImageCount: removedImageUrls.length,
+      },
+    });
+
+    return NextResponse.json(mapProductRecord(product));
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }
 
-// DELETE product
 export async function DELETE(
-    req: NextRequest,
-    { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
-    try {
-        const products = readProducts();
-        const filtered = products.filter((p: any) => p.id !== params.id);
+  const admin = await requireAdminRequest(req, 'catalog');
 
-        if (filtered.length === products.length) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
+  if (admin instanceof NextResponse) {
+    return admin;
+  }
 
-        writeProducts(filtered);
-        return NextResponse.json({ success: true, message: `Product ${params.id} deleted` });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+  try {
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        images: true,
+      },
+    });
+
+    if (!existingProduct) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
+
+    await prisma.product.delete({
+      where: {
+        id: params.id,
+      },
+    });
+
+    await deleteProductAssets(existingProduct.images.map((image) => image.url));
+
+    await logAdminAudit({
+      actorUserId: admin.userId,
+      action: 'PRODUCT_DELETED',
+      entityType: 'product',
+      entityId: existingProduct.id,
+      summary: `Deleted product ${existingProduct.title}.`,
+      metadata: {
+        productId: existingProduct.id,
+        handle: existingProduct.handle,
+        title: existingProduct.title,
+        deletedImageCount: existingProduct.images.length,
+      },
+    });
+
+    return NextResponse.json({ success: true, message: `Product ${params.id} deleted` });
+  } catch (error) {
+    return handleRouteError(error);
+  }
 }

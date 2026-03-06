@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, Clock, ShieldCheck, MapPin } from 'lucide-react';
@@ -67,10 +68,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="/collections/single-layer" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                <img
+                <Image
                   src="/products/round-single-1.png"
                   alt="Single Layer acrylic house number sign"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
@@ -83,10 +86,12 @@ export default function Home() {
 
             <Link href="/collections/double-layer" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                <img
+                <Image
                   src="/products/square-double-1.png"
                   alt="Double Layer acrylic house number sign"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
@@ -99,10 +104,12 @@ export default function Home() {
 
             <Link href="/collections/3d-raised" className="group block">
               <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden mb-6 relative">
-                <img
+                <Image
                   src="/products/3d-raised-1.png"
                   alt="3D Raised individual house numbers"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
@@ -175,10 +182,12 @@ export default function Home() {
               </Button>
             </div>
             <div className="bg-neutral-900 rounded-3xl overflow-hidden aspect-square relative">
-              <img
+              <Image
                 src="/products/round-double-1.png"
                 alt="Bulk order house number signs"
-                className="w-full h-full object-cover opacity-60"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover opacity-60"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8 space-y-3">

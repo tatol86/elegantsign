@@ -1,16 +1,41 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {
+    ADMIN_SESSION_COOKIE,
+    getAdminPermissionForPath,
+    hasAdminPermission,
+    verifyAdminSessionToken,
+} from '@/lib/admin-auth';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+    const permission = getAdminPermissionForPath(pathname);
 
-    // Protect all /admin routes except /admin/login
+    if (pathname.startsWith('/api/admin') && pathname !== '/api/admin/login') {
+        const session = token ? await verifyAdminSessionToken(token) : null;
+
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (permission && !hasAdminPermission(session.role, permission)) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+    }
+
     if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-        const token = request.cookies.get('admin_token');
+        const session = token ? await verifyAdminSessionToken(token) : null;
 
-        if (!token || token.value !== 'valid_token') {
+        if (!session) {
             const url = request.nextUrl.clone();
             url.pathname = '/admin/login';
+            return NextResponse.redirect(url);
+        }
+
+        if (permission && !hasAdminPermission(session.role, permission)) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/admin';
             return NextResponse.redirect(url);
         }
     }
@@ -19,5 +44,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/admin/:path*',
+    matcher: ['/admin/:path*', '/api/admin/:path*'],
 };

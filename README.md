@@ -1,75 +1,100 @@
-# ModernSign - Premium E-Commerce Website
+# ElegantSign
 
-A high-end, responsive Next.js 14 e-commerce application designed for custom architectural signage and 3D printed decor. Built with a focus on advanced aesthetics, minimal design, and dynamic product configuration.
+Next.js 14 storefront for custom signage, now wired for a real PostgreSQL-backed product catalog instead of local JSON writes.
 
-## Features
+## Stack
 
-- **Next.js 14 App Router:** utilizing React Server Components for fast load times and SEO friendliness.
-- **Dynamic Customization & Live SVG Preview:** Users can configure shapes, text, fonts, and layouts for acrylic signs, receiving real-time, accurate SVG visual feedback.
-- **Zustand Cart & LocalStorage:** Global state management for the shopping cart with automatic persistence.
-- **Tiered Bulk Discounts:** Automatically applied tiered pricing in the cart (e.g., 5+ items = 15% off).
-- **Responsive & Accessible Design:** Minimalist black/white/gray aesthetic built with TailwindCSS, shadcn/ui, and Radix UI primitives.
+- Next.js 14 App Router
+- PostgreSQL
+- Prisma ORM
+- Vercel Blob for production image storage
+- Zustand cart state
+- Tailwind CSS + shadcn/ui
 
----
+## Local Setup
 
-## 🚀 Getting Started
-
-### 1. Requirements
-- Node.js 18+
-- npm or pnpm or yarn
-
-### 2. Installation
-Clone this repository or extract the project folder, then run:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 3. Running the Development Server
+2. Copy environment variables from `.env.example` into `.env` and set real admin credentials.
+
+If you want uploads to use production storage locally, also set:
+
+```env
+BLOB_READ_WRITE_TOKEN="your-vercel-blob-token"
+```
+
+Without that token, uploads fall back to local disk under `public/products/uploads`.
+
+3. Start PostgreSQL.
+
+If you have Docker installed:
+
+```bash
+docker compose up -d
+```
+
+If you do not use Docker, create a local PostgreSQL database named `elegantsign` and point `DATABASE_URL` at it.
+
+4. Generate the Prisma client, run migrations, and seed products:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+5. Start the app:
+
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+Open [http://localhost:3000](http://localhost:3000).
 
-## 📦 Data Architecture & Extensibility
+## Database Commands
 
-Currently, the application operates entirely without an external database, pulling everything from local typescript files to ensure it works completely out of the box.
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:migrate:dev
+npm run db:push
+npm run db:seed
+npm run db:studio
+```
 
-### Managing Products
-Products are defined in `src/data/products.ts`. You can add, edit, or remove products and their variants here. 
-To transition to a Headless CMS (like Shopify or Medusa), you simply need to replace the data fetching logic in `src/app/collections/[slug]/page.tsx` and `src/app/products/[handle]/page.tsx`.
+The initial SQL migration is committed at [prisma/migrations/0001_init/migration.sql](/C:/Users/Will/Downloads/New%20folder/web/prisma/migrations/0001_init/migration.sql).
 
-### Extending to Shopify / Medusa
-1. **Initialize API Client:** Place your Shopify storefront or Medusa client initialization in `src/lib/api.ts` (create this).
-2. **Replace Data Fills:** In `app/products/[handle]/page.tsx`, replace the `getProductByHandle` function call with `await medusaClient.products.retrieve(handle)`.
-3. **Checkout Swap:** Hook the 'Checkout' button in `app/cart/page.tsx` to initiate a Medusa/Shopify checkout session using their respective APIs, rather than the local simulated route.
+## Current Data Model
 
----
+The database schema now includes the base tables needed for a production commerce flow:
 
-## 💳 Checkout Modes
+- `products`, `product_images`, `product_size_options`
+- `users`, `accounts`, `sessions`, `verification_tokens`
+- `addresses`
+- `orders`, `order_items`, `order_status_history`
 
-### 1. Default (Simulated Checkout)
-Out of the box, clicking "Checkout" in the Cart page will clear your local cart and redirect you to a simulated success page (`/order/[id]`). This allows full testing of the UI flows without configuring payment gateways.
+Legacy product content still lives in [src/data/products.json](/C:/Users/Will/Downloads/New%20folder/web/src/data/products.json), but only as a seed source for local bootstrap.
 
-### 2. Enabling Stripe Checkout
-To integrate real payments using Stripe:
-1. Install Stripe: `npm install stripe @stripe/stripe-js`
-2. Create `src/app/api/checkout_sessions/route.ts`.
-3. Set your internal `.env.local`:
-   ```env
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-   STRIPE_SECRET_KEY=sk_test_...
-   ```
-4. Update the checkout handler in `src/app/cart/page.tsx` to POST to your new API route and redirect the user to the Stripe hosted checkout URL.
+## Admin Access
 
----
+Admin login is now server-validated through `/api/admin/login` and stored in an `httpOnly` signed cookie. Set these values in `.env`:
 
-## 🚀 Deployment
+```env
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="replace-me"
+ADMIN_SESSION_SECRET="long-random-secret"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new).
+This is a transitional admin auth layer. Customer registration, password reset, and account management should move to Auth.js or another full auth system in the next phase.
 
-1. Push your code to a GitHub repository.
-2. Link the repository to your Vercel account.
-3. Vercel will automatically detect the Next.js framework, build, and deploy the application. No extra configuration needed!
+## Deployment Notes
+
+- Deploy the app on Vercel.
+- Keep PostgreSQL outside the Vercel filesystem.
+- Product image uploads now use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is configured.
+- Local development still falls back to `public/products/uploads`, but that fallback should not be treated as production storage.
+- Payment is still simulated. Real checkout should create and update `orders` rows instead of redirecting directly to a fake success page.

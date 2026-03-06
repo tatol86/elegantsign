@@ -1,0 +1,84 @@
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+export default function LoginForm({ nextPath }: { nextPath: string }) {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error || 'Login failed');
+        return;
+      }
+
+      router.push(nextPath);
+      router.refresh();
+    } catch {
+      setError('Login failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-16 flex justify-center">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-3xl tracking-tight">Sign in</CardTitle>
+          <CardDescription>Access your saved orders and checkout history.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full h-12 rounded-xl border px-4"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoFocus
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full h-12 rounded-xl border px-4"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Button type="submit" className="w-full h-12" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
+          <p className="mt-6 text-sm text-neutral-500">
+            New customer?{' '}
+            <Link href={`/account/register?next=${encodeURIComponent(nextPath)}`} className="font-medium text-black">
+              Create an account
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

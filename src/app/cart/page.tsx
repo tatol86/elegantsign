@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,15 +10,48 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import SignPreview, { isPreviewSupported } from '@/components/product/SignPreview';
+
+type SessionUser = {
+    id: string;
+    email: string;
+    name: string | null;
+};
 
 export default function CartPage() {
     const router = useRouter();
-    const { items, removeItem, updateQuantity, getTotal, getSubtotal, getDiscount, clearCart } = useCartStore();
+    const { items, removeItem, updateQuantity, getSubtotal, getDiscount, clearCart } = useCartStore();
     const [mounted, setMounted] = useState(false);
     const [shippingMethod, setShippingMethod] = useState('standard');
+    const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
+    const [sessionLoading, setSessionLoading] = useState(true);
+    const [checkoutError, setCheckoutError] = useState('');
+    const [submittingOrder, setSubmittingOrder] = useState(false);
+    const [shippingAddress, setShippingAddress] = useState({
+        firstName: '',
+        lastName: '',
+        line1: '',
+        line2: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: 'Australia',
+        phone: '',
+    });
 
     useEffect(() => {
         setMounted(true);
+        fetch('/api/auth/session', { cache: 'no-store' })
+            .then((response) => response.json())
+            .then((data) => {
+                setSessionUser(data?.user || null);
+            })
+            .catch(() => {
+                setSessionUser(null);
+            })
+            .finally(() => {
+                setSessionLoading(false);
+            });
     }, []);
 
     if (!mounted) return null; // Avoid hydration mismatch
@@ -27,11 +61,50 @@ export default function CartPage() {
     const shippingCost = shippingMethod === 'express' ? 10 : 0;
     const grandTotal = subtotal - discountAmount + shippingCost;
 
-    const handleCheckout = () => {
-        // Simulate checkout process
-        const orderId = 'MS' + Math.floor(100000 + Math.random() * 900000);
-        clearCart();
-        router.push(`/order/${orderId}`);
+    const handleCheckout = async () => {
+        if (!sessionUser) {
+            router.push('/account/login?next=/cart');
+            return;
+        }
+
+        setSubmittingOrder(true);
+        setCheckoutError('');
+
+        try {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    shippingMethod,
+                    shippingAddress,
+                    items: items.map((item) => ({
+                        productId: item.product.id,
+                        quantity: item.quantity,
+                        selectedColor: item.selectedColor,
+                        selectedSize: item.selectedSize,
+                        selectedMaterial: item.selectedMaterial,
+                        selectedMounting: item.selectedMounting,
+                        personalization: item.personalization,
+                    })),
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                setCheckoutError(data?.error || 'Checkout failed');
+                return;
+            }
+
+            const data = await response.json();
+            clearCart();
+            router.push(`/checkout/pay/${data.orderNumber}`);
+        } catch {
+            setCheckoutError('Checkout failed');
+        } finally {
+            setSubmittingOrder(false);
+        }
     };
 
     if (items.length === 0) {
@@ -57,16 +130,21 @@ export default function CartPage() {
                         <div key={item.id} className="flex flex-col sm:flex-row gap-6 p-6 bg-white border border-neutral-200 rounded-3xl relative">
                             {/* Item Image / Preview */}
                             <div className="w-full sm:w-32 h-32 shrink-0 bg-neutral-100 rounded-2xl overflow-hidden relative flex items-center justify-center">
-                                {item.previewSvg ? (
-                                    <div
+                                {item.personalization && isPreviewSupported(item.product) ? (
+                                    <SignPreview
+                                        product={item.product}
+                                        selectedColor={item.selectedColor}
+                                        personalization={item.personalization}
+                                        size={item.product.sizeOptions?.find((option) => option.label === item.selectedSize) || null}
                                         className="w-[80%] h-[80%] drop-shadow-md"
-                                        dangerouslySetInnerHTML={{ __html: item.previewSvg }}
                                     />
                                 ) : (
-                                    <img
+                                    <Image
                                         src={item.product.images[0]}
                                         alt={item.product.title}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        sizes="128px"
+                                        className="object-cover"
                                     />
                                 )}
                             </div>
@@ -153,17 +231,92 @@ export default function CartPage() {
                             </RadioGroup>
                         </div>
 
+                        <div className="pt-6 border-t border-neutral-200 space-y-4">
+                            <div className="flex items-center justify-between gap-3">
+                                <h3 className="font-semibold">Customer</h3>
+                                {!sessionLoading && !sessionUser && (
+                                    <Link href="/account/login?next=/cart" className="text-sm font-medium text-black underline">
+                                        Sign in
+                                    </Link>
+                                )}
+                            </div>
+
+                            {sessionLoading ? (
+                                <p className="text-sm text-neutral-500">Checking account status...</p>
+                            ) : sessionUser ? (
+                                <div className="rounded-2xl border bg-white p-4">
+                                    <p className="font-medium">{sessionUser.name || sessionUser.email}</p>
+                                    <p className="text-sm text-neutral-500 mt-1">{sessionUser.email}</p>
+                                </div>
+                            ) : (
+                                <div className="rounded-2xl border bg-white p-4 space-y-3">
+                                    <p className="text-sm text-neutral-600">Please sign in or create an account before placing an order.</p>
+                                    <div className="flex gap-3">
+                                        <Button asChild variant="outline" className="flex-1">
+                                            <Link href="/account/login?next=/cart">Sign in</Link>
+                                        </Button>
+                                        <Button asChild className="flex-1">
+                                            <Link href="/account/register?next=/cart">Register</Link>
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="pt-6 border-t border-neutral-200 space-y-4">
+                            <h3 className="font-semibold">Shipping Address</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="firstName">First name</Label>
+                                    <Input id="firstName" value={shippingAddress.firstName} onChange={(event) => setShippingAddress((current) => ({ ...current, firstName: event.target.value }))} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="lastName">Last name</Label>
+                                    <Input id="lastName" value={shippingAddress.lastName} onChange={(event) => setShippingAddress((current) => ({ ...current, lastName: event.target.value }))} />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <Label htmlFor="line1">Address line 1</Label>
+                                    <Input id="line1" value={shippingAddress.line1} onChange={(event) => setShippingAddress((current) => ({ ...current, line1: event.target.value }))} />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <Label htmlFor="line2">Address line 2</Label>
+                                    <Input id="line2" value={shippingAddress.line2} onChange={(event) => setShippingAddress((current) => ({ ...current, line2: event.target.value }))} />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <Label htmlFor="city">City / Suburb</Label>
+                                    <Input id="city" value={shippingAddress.city} onChange={(event) => setShippingAddress((current) => ({ ...current, city: event.target.value }))} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="state">State</Label>
+                                    <Input id="state" value={shippingAddress.state} onChange={(event) => setShippingAddress((current) => ({ ...current, state: event.target.value }))} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="postalCode">Postcode</Label>
+                                    <Input id="postalCode" value={shippingAddress.postalCode} onChange={(event) => setShippingAddress((current) => ({ ...current, postalCode: event.target.value }))} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="country">Country</Label>
+                                    <Input id="country" value={shippingAddress.country} onChange={(event) => setShippingAddress((current) => ({ ...current, country: event.target.value }))} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Phone</Label>
+                                    <Input id="phone" value={shippingAddress.phone} onChange={(event) => setShippingAddress((current) => ({ ...current, phone: event.target.value }))} />
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="pt-6 border-t border-neutral-200 pb-2">
                             <div className="flex justify-between items-end mb-6">
                                 <span className="text-lg font-semibold">Total (AUD)</span>
                                 <span className="text-3xl font-bold tracking-tight">${grandTotal.toFixed(2)}</span>
                             </div>
-                            <Button onClick={handleCheckout} size="lg" className="w-full h-14 text-base font-bold flex items-center justify-between px-6 rounded-xl hover:scale-[1.02] transition-transform">
-                                <span>Checkout</span>
+                            {checkoutError && <p className="text-sm text-red-600 mb-4">{checkoutError}</p>}
+                            <Button onClick={handleCheckout} size="lg" disabled={submittingOrder || sessionLoading} className="w-full h-14 text-base font-bold flex items-center justify-between px-6 rounded-xl hover:scale-[1.02] transition-transform disabled:hover:scale-100">
+                                <span>{submittingOrder ? 'Creating order...' : 'Create Order & Pay'}</span>
                                 <ArrowRight className="w-5 h-5" />
                             </Button>
                             <p className="text-center text-xs text-neutral-400 mt-4 flex items-center justify-center gap-1">
-                                <ShieldCheck className="w-4 h-4" /> Secure SSL Checkout
+                                <ShieldCheck className="w-4 h-4" /> Next step opens the local test payment screen.
                             </p>
                         </div>
                     </div>

@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Menu, Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { ShoppingCart, Menu, Search, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/useCartStore';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [accountHref, setAccountHref] = useState('/account/login');
     const totalItems = useCartStore((state) => state.getTotalItems());
 
     const navLinks = [
@@ -18,6 +19,29 @@ export default function Header() {
         { name: '3D Printed', href: '/collections/3d-printed' },
         { name: 'About', href: '/pages/about' },
     ];
+
+    useEffect(() => {
+        let active = true;
+
+        fetch('/api/auth/session', { cache: 'no-store' })
+            .then((response) => response.json())
+            .then((data) => {
+                if (!active) {
+                    return;
+                }
+
+                setAccountHref(data?.user ? '/account' : '/account/login');
+            })
+            .catch(() => {
+                if (active) {
+                    setAccountHref('/account/login');
+                }
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
@@ -42,6 +66,13 @@ export default function Header() {
                                         {link.name}
                                     </Link>
                                 ))}
+                                <Link
+                                    href={accountHref}
+                                    className="text-lg font-medium hover:text-primary transition-colors"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    Account
+                                </Link>
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -69,6 +100,11 @@ export default function Header() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
+                    <Link href={accountHref}>
+                        <Button variant="ghost" size="icon" aria-label="Account">
+                            <User className="h-5 w-5" />
+                        </Button>
+                    </Link>
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" aria-label="Search">

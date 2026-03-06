@@ -7,18 +7,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Lock } from 'lucide-react';
 
 export default function AdminLoginPage() {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Basic password protection (Hardcoded for prototype - should be ENV in production)
-        if (password === 'admin123') {
-            document.cookie = 'admin_token=valid_token; path=/; max-age=86400'; // 24 hours
+        setSubmitting(true);
+        setError('');
+
+        try {
+            const response = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                setError(data?.error || 'Login failed');
+                return;
+            }
+
             router.push('/admin');
-        } else {
-            setError('Invalid password');
+            router.refresh();
+        } catch {
+            setError('Login failed');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -38,17 +58,26 @@ export default function AdminLoginPage() {
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
                             <input
+                                type="email"
+                                placeholder="Admin email"
+                                className="w-full h-12 bg-neutral-800 border-neutral-700 rounded-lg px-4 focus:ring-2 focus:ring-white transition-all text-white"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <input
                                 type="password"
                                 placeholder="Password"
                                 className="w-full h-12 bg-neutral-800 border-neutral-700 rounded-lg px-4 focus:ring-2 focus:ring-white transition-all text-white"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                autoFocus
                             />
                             {error && <p className="text-xs text-red-500">{error}</p>}
                         </div>
-                        <Button type="submit" className="w-full h-12 bg-white text-black hover:bg-neutral-200 font-semibold">
-                            Login
+                        <Button type="submit" disabled={submitting} className="w-full h-12 bg-white text-black hover:bg-neutral-200 font-semibold">
+                            {submitting ? 'Logging in...' : 'Login'}
                         </Button>
                     </form>
                     <p className="text-center text-[10px] text-neutral-500 mt-6 tracking-widest uppercase">

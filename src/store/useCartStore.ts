@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '../data/products';
+import type { Product, ProductPersonalization } from '@/types/catalog';
 
 export interface CartItem {
     id: string; // Unique ID for the cart item instance (e.g. timestamp or uuid)
@@ -10,14 +10,7 @@ export interface CartItem {
     selectedSize?: string;
     selectedMaterial?: string;
     selectedMounting?: string;
-    personalization?: {
-        text1?: string;
-        text2?: string;
-        font?: string;
-        layout?: string;
-        shape?: string;
-    };
-    previewSvg?: string; // Storing the SVG representation for the cart
+    personalization?: ProductPersonalization;
     unitPrice: number;
 }
 

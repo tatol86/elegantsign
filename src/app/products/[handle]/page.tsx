@@ -7,7 +7,7 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { handle: string } }): Promise<Metadata> {
-    const product = getProductByHandle(params.handle);
+    const product = await getProductByHandle(params.handle);
     if (!product) return { title: 'Product Not Found' };
 
     return {
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: { handle: string } 
     };
 }
 
-export default function ProductPage({ params }: { params: { handle: string } }) {
-    const product = getProductByHandle(params.handle);
+export default async function ProductPage({ params }: { params: { handle: string } }) {
+    const product = await getProductByHandle(params.handle);
 
     if (!product) {
         notFound();
